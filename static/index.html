@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TFRRS Elite Runners</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>TFRRS Elite Runners</h1>
+      <p>Filter by gender, division, school, season, and event — then export to Excel.</p>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <div class="gender-tabs">
+          <button type="button" class="gender-tab" data-gender="m">
+            Men
+            <span class="count">—</span>
+          </button>
+          <button type="button" class="gender-tab" data-gender="f">
+            Women
+            <span class="count">—</span>
+          </button>
+        </div>
+
+        <div class="view-toggle">
+          <button type="button" data-view="athletes">Athletes</button>
+          <button type="button" data-view="marks">All marks</button>
+        </div>
+
+        <div class="filter-group">
+          <label for="search">Search name</label>
+          <input type="search" id="search" placeholder="e.g. Watkins" autocomplete="off" />
+        </div>
+
+        <div class="filter-group">
+          <label for="division">Division</label>
+          <select id="division" multiple></select>
+        </div>
+
+        <div class="filter-group">
+          <label for="school">School</label>
+          <select id="school" multiple></select>
+        </div>
+
+        <div class="filter-group">
+          <label for="season">Season</label>
+          <select id="season" multiple></select>
+        </div>
+
+        <div class="filter-group">
+          <label for="event">Event</label>
+          <select id="event" multiple></select>
+        </div>
+
+        <button type="button" class="btn btn-secondary clear-filters" id="clear-filters">
+          Clear filters
+        </button>
+      </aside>
+
+      <main>
+        <div class="toolbar">
+          <span class="result-count" id="result-count">Loading…</span>
+          <button type="button" class="btn btn-primary" id="export-btn">
+            Export filtered sheet
+          </button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none">Loading…</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

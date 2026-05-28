@@ -1,0 +1,213 @@
+/Users/porterwhitworth/Projects/tfrrs-elite-runners/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+[1/96] 2026 outdoor | NCAA D1 | Men
+    -> 830 qualifying marks
+[2/96] 2026 outdoor | NCAA D1 | Women
+    -> 1371 qualifying marks
+[3/96] 2026 outdoor | NCAA D2 | Men
+    -> 98 qualifying marks
+[4/96] 2026 outdoor | NCAA D2 | Women
+    -> 116 qualifying marks
+[5/96] 2026 outdoor | NCAA D3 | Men
+    -> 29 qualifying marks
+[6/96] 2026 outdoor | NCAA D3 | Women
+    -> 54 qualifying marks
+[7/96] 2026 outdoor | NAIA | Men
+    -> 13 qualifying marks
+[8/96] 2026 outdoor | NAIA | Women
+    -> 16 qualifying marks
+[9/96] 2026 outdoor | NJCAA | Men
+    -> 16 qualifying marks
+[10/96] 2026 outdoor | NJCAA | Women
+    -> 6 qualifying marks
+[11/96] 2026 outdoor | NWAC | Men
+    -> 0 qualifying marks
+[12/96] 2026 outdoor | NWAC | Women
+    -> 0 qualifying marks
+[13/96] 2026 outdoor | NCCAA | Men
+    -> 0 qualifying marks
+[14/96] 2026 outdoor | NCCAA | Women
+    -> 0 qualifying marks
+[15/96] 2026 outdoor | USCAA | Men
+    -> 0 qualifying marks
+[16/96] 2026 outdoor | USCAA | Women
+    -> 0 qualifying marks
+[17/96] 2025 outdoor | NCAA D1 | Men
+    -> 862 qualifying marks
+[18/96] 2025 outdoor | NCAA D1 | Women
+    -> 1307 qualifying marks
+[19/96] 2025 outdoor | NCAA D2 | Men
+    -> 97 qualifying marks
+[20/96] 2025 outdoor | NCAA D2 | Women
+    -> 116 qualifying marks
+[21/96] 2025 outdoor | NCAA D3 | Men
+    -> 47 qualifying marks
+[22/96] 2025 outdoor | NCAA D3 | Women
+    -> 61 qualifying marks
+[23/96] 2025 outdoor | NAIA | Men
+    -> 9 qualifying marks
+[24/96] 2025 outdoor | NAIA | Women
+    -> 22 qualifying marks
+[25/96] 2025 outdoor | NJCAA | Men
+    -> 0 qualifying marks
+[26/96] 2025 outdoor | NJCAA | Women
+    -> 1 qualifying marks
+[27/96] 2025 outdoor | NWAC | Men
+    -> 0 qualifying marks
+[28/96] 2025 outdoor | NWAC | Women
+    -> 0 qualifying marks
+[29/96] 2025 outdoor | NCCAA | Men
+    -> 0 qualifying marks
+[30/96] 2025 outdoor | NCCAA | Women
+    -> 0 qualifying marks
+[31/96] 2025 outdoor | USCAA | Men
+    -> 0 qualifying marks
+[32/96] 2025 outdoor | USCAA | Women
+    -> 0 qualifying marks
+[33/96] 2024 outdoor | NCAA D1 | Men
+    -> 28 qualifying marks
+[34/96] 2024 outdoor | NCAA D1 | Women
+    -> 31 qualifying marks
+[35/96] 2024 outdoor | NCAA D2 | Men
+    -> 22 qualifying marks
+[36/96] 2024 outdoor | NCAA D2 | Women
+    -> 28 qualifying marks
+[37/96] 2024 outdoor | NCAA D3 | Men
+    -> 27 qualifying marks
+[38/96] 2024 outdoor | NCAA D3 | Women
+    -> 34 qualifying marks
+[39/96] 2024 outdoor | NAIA | Men
+    -> 29 qualifying marks
+[40/96] 2024 outdoor | NAIA | Women
+    -> 39 qualifying marks
+[41/96] 2024 outdoor | NJCAA | Men
+    -> 25 qualifying marks
+[42/96] 2024 outdoor | NJCAA | Women
+    -> 38 qualifying marks
+[43/96] 2024 outdoor | NWAC | Men
+    -> 21 qualifying marks
+[44/96] 2024 outdoor | NWAC | Women
+    -> 47 qualifying marks
+[45/96] 2024 outdoor | NCCAA | Men
+    -> 18 qualifying marks
+[46/96] 2024 outdoor | NCCAA | Women
+    -> 25 qualifying marks
+[47/96] 2024 outdoor | USCAA | Men
+    -> 37 qualifying marks
+[48/96] 2024 outdoor | USCAA | Women
+    -> 53 qualifying marks
+[49/96] 2026 indoor | NAIA | Men
+    -> 3 qualifying marks
+[50/96] 2026 indoor | NAIA | Women
+    -> 11 qualifying marks
+[51/96] 2026 indoor | NCAA D1 | Men
+    -> 703 qualifying marks
+[52/96] 2026 indoor | NCAA D1 | Women
+    -> 1168 qualifying marks
+[53/96] 2026 indoor | NCAA D2 | Men
+    -> 75 qualifying marks
+[54/96] 2026 indoor | NCAA D2 | Women
+    -> 121 qualifying marks
+[55/96] 2026 indoor | NCAA D3 | Men
+    -> 12 qualifying marks
+[56/96] 2026 indoor | NCAA D3 | Women
+    -> 40 qualifying marks
+[57/96] 2026 indoor | NJCAA | Men
+    -> 5 qualifying marks
+[58/96] 2026 indoor | NJCAA | Women
+    -> 14 qualifying marks
+[59/96] 2026 indoor | NCCAA | Men
+    -> 0 qualifying marks
+[60/96] 2026 indoor | NCCAA | Women
+    -> 0 qualifying marks
+[61/96] 2026 indoor | NWAC | Men
+    -> 0 qualifying marks
+[62/96] 2026 indoor | NWAC | Women
+    -> 1 qualifying marks
+[63/96] 2026 indoor | USCAA | Men
+    -> 0 qualifying marks
+[64/96] 2026 indoor | USCAA | Women
+    -> 0 qualifying marks
+[65/96] 2025 indoor | NAIA | Men
+    -> 0 qualifying marks
+[66/96] 2025 indoor | NAIA | Women
+    -> 0 qualifying marks
+[67/96] 2025 indoor | NCAA D1 | Men
+    -> 781 qualifying marks
+[68/96] 2025 indoor | NCAA D1 | Women
+    -> 1029 qualifying marks
+[69/96] 2025 indoor | NCAA D2 | Men
+    -> 72 qualifying marks
+[70/96] 2025 indoor | NCAA D2 | Women
+    -> 110 qualifying marks
+[71/96] 2025 indoor | NCAA D3 | Men
+    -> 1 qualifying marks
+[72/96] 2025 indoor | NCAA D3 | Women
+    -> 27 qualifying marks
+[73/96] 2025 indoor | NJCAA | Men
+    -> 2 qualifying marks
+[74/96] 2025 indoor | NJCAA | Women
+    -> 5 qualifying marks
+[75/96] 2025 indoor | NCCAA | Men
+    -> 4 qualifying marks
+[76/96] 2025 indoor | NCCAA | Women
+    -> 3 qualifying marks
+[77/96] 2025 indoor | NWAC | Men
+    -> 0 qualifying marks
+[78/96] 2025 indoor | NWAC | Women
+    -> 2 qualifying marks
+[79/96] 2025 indoor | USCAA | Men
+    -> 76 qualifying marks
+[80/96] 2025 indoor | USCAA | Women
+    -> 160 qualifying marks
+[81/96] 2024 indoor | NAIA | Men
+    -> 0 qualifying marks
+[82/96] 2024 indoor | NAIA | Women
+    -> 0 qualifying marks
+[83/96] 2024 indoor | NCAA D1 | Men
+    -> 591 qualifying marks
+[84/96] 2024 indoor | NCAA D1 | Women
+    -> 976 qualifying marks
+[85/96] 2024 indoor | NCAA D2 | Men
+    -> 39 qualifying marks
+[86/96] 2024 indoor | NCAA D2 | Women
+    -> 95 qualifying marks
+[87/96] 2024 indoor | NCAA D3 | Men
+    -> 6 qualifying marks
+[88/96] 2024 indoor | NCAA D3 | Women
+    -> 24 qualifying marks
+[89/96] 2024 indoor | NJCAA | Men
+    -> 5 qualifying marks
+[90/96] 2024 indoor | NJCAA | Women
+    -> 11 qualifying marks
+[91/96] 2024 indoor | NCCAA | Men
+    -> 1 qualifying marks
+[92/96] 2024 indoor | NCCAA | Women
+    -> 6 qualifying marks
+[93/96] 2024 indoor | NWAC | Men
+    -> 0 qualifying marks
+[94/96] 2024 indoor | NWAC | Women
+    -> 0 qualifying marks
+[95/96] 2024 indoor | USCAA | Men
+    -> 0 qualifying marks
+[96/96] 2024 indoor | USCAA | Women
+    -> 0 qualifying marks
+
+Qualifying performances: 11752
+Unique athletes: 4039
+Wrote /Users/porterwhitworth/Projects/tfrrs-elite-runners/elite_runners_tfrrs.xlsx
+
+Marks by season label:
+  2024 indoor: 1754
+  2024 outdoor: 502
+  2025 indoor: 2272
+  2025 outdoor: 2522
+  2026 indoor: 2153
+  2026 outdoor: 2549
+
+Marks by calendar year:
+  2024: 2256
+  2025: 4794
+  2026: 4702
+
+List sources scraped: 48 (×2 genders = 96 requests)
