@@ -4,17 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Upload, CheckCircle, AlertCircle, Loader2, Info } from "lucide-react";
 
-const SHEETS = [
-  { name: "Men XC",      gender: "M", defaultEvent: "Men's Cross Country" },
-  { name: "Men Outdoor", gender: "M", defaultEvent: "Men's Track, Outdoor" },
-  { name: "Women XC",    gender: "F", defaultEvent: "Women's Cross Country" },
-  { name: "Women Track", gender: "F", defaultEvent: "Women's Track, Outdoor" },
+const FILES = [
+  {
+    name: "Women's Marks",
+    gender: "F",
+    url: "https://media.base44.com/files/public/6a1893dc4924557a687e6543/40e77bbff_elite_runners_women_marks.xlsx",
+  },
+  {
+    name: "Men's Marks",
+    gender: "M",
+    url: "https://media.base44.com/files/public/6a1893dc4924557a687e6543/df5498183_elite_runners_men_marks.xlsx",
+  },
 ];
 
-const FILE_URL = "https://media.base44.com/files/public/6a1893dc4924557a687e6543/df8b6104c_PortalInfo1.xlsx";
-
-// Spreadsheet columns (row 1 header):
-// TWL | Year | NCAA ID | First Name | Last Name | Initiated Date | Last Updated | D | Institution | Sport | Designated Student-Athlete | Sport Conference | Student Status
+// Columns: Gender, Athlete, TFRRS Profile, Athlete ID, School, Division, Season, Event, Time, Class Year, Meet, Meet Date, List ID
 const SCHEMA = {
   type: "object",
   properties: {
@@ -23,60 +26,90 @@ const SCHEMA = {
       items: {
         type: "object",
         properties: {
-          twl:                        { type: "string", description: "TWL column" },
-          academic_year:              { type: "string", description: "Year column (e.g. 2025-26)" },
-          ncaa_id:                    { type: "string", description: "NCAA ID column - numeric athlete ID" },
-          first_name:                 { type: "string", description: "First Name column" },
-          last_name:                  { type: "string", description: "Last Name column" },
-          initiated_date:             { type: "string", description: "Initiated Date column" },
-          last_updated:               { type: "string", description: "Last Updated column" },
-          division:                   { type: "string", description: "D column - I, II, or III" },
-          institution:                { type: "string", description: "Institution column - school/university name" },
-          sport:                      { type: "string", description: "Sport column - may have multiple sports newline separated" },
-          designated_student_athlete: { type: "string", description: "Designated Student-Athlete column" },
-          sport_conference:           { type: "string", description: "Sport Conference column - may be newline separated" },
-          student_status:             { type: "string", description: "Student Status column" },
+          gender:       { type: "string",  description: "Gender column" },
+          athlete:      { type: "string",  description: "Athlete column - Last, First format" },
+          tfrrs_profile:{ type: "string",  description: "TFRRS Profile URL" },
+          athlete_id:   { type: "string",  description: "Athlete ID (TFRRS numeric ID)" },
+          school:       { type: "string",  description: "School column" },
+          division:     { type: "string",  description: "Division column e.g. NCAA D1" },
+          season:       { type: "string",  description: "Season e.g. 2025 outdoor" },
+          event:        { type: "string",  description: "Event column e.g. 800m, Mile, 5000m" },
+          time:         { type: "string",  description: "Time column - performance mark" },
+          class_year:   { type: "string",  description: "Class Year e.g. SR-4" },
+          meet:         { type: "string",  description: "Meet name" },
+          meet_date:    { type: "string",  description: "Meet Date" },
+          list_id:      { type: "number",  description: "List ID" },
         }
       }
     }
   }
 };
 
-const clean = (s) => String(s || "").replace(/\u00a0/g, "").replace(/\s+/g, " ").trim();
-const firstLine = (s) => clean(s).split(/[\n\r]/)[0].trim();
+/** Convert time string like "4:22.46" or "1:49.78" or "13:37.25" or "28:22.62" to seconds */
+function timeToSeconds(t) {
+  if (!t) return 0;
+  const s = String(t).trim();
+  const parts = s.split(":");
+  if (parts.length === 3) {
+    // h:mm:ss.xx
+    return parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2]);
+  } else if (parts.length === 2) {
+    // m:ss.xx
+    return parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
+  }
+  return parseFloat(s) || 0;
+}
+
+/** Parse "Last, First" or "Last, First Middle" athlete name */
+function parseName(athlete) {
+  if (!athlete) return { first_name: "", last_name: "" };
+  const commaIdx = athlete.indexOf(",");
+  if (commaIdx === -1) return { first_name: "", last_name: athlete.trim() };
+  const last = athlete.slice(0, commaIdx).trim();
+  const first = athlete.slice(commaIdx + 1).trim();
+  return { first_name: first, last_name: last };
+}
+
+const clean = (s) => String(s || "").trim();
 
 export default function ImportData() {
   const [status, setStatus] = useState([]);
   const [running, setRunning] = useState(false);
   const [done, setDone] = useState(false);
   const [clearFirst, setClearFirst] = useState(true);
+  const [totalImported, setTotalImported] = useState(0);
+  const [totalDupes, setTotalDupes] = useState(0);
 
   const runImport = async () => {
     setRunning(true);
     setDone(false);
-    setStatus(SHEETS.map(s => ({ sheet: s.name, state: "pending", count: 0 })));
+    setTotalImported(0);
+    setTotalDupes(0);
+    setStatus(FILES.map(f => ({ name: f.name, state: "pending", count: 0, dupes: 0 })));
 
-    // Optionally clear existing data first
     if (clearFirst) {
+      setStatus(prev => prev.map((s, i) => i === 0 ? { ...s, state: "clearing" } : s));
       try {
-        const existing = await base44.entities.Runner.list(null, 2000);
-        if (existing.length > 0) {
-          for (const r of existing) {
-            await base44.entities.Runner.delete(r.id);
+        let page;
+        do {
+          page = await base44.entities.Runner.list(null, 500);
+          if (page.length > 0) {
+            await Promise.all(page.map(r => base44.entities.Runner.delete(r.id)));
           }
-        }
-      } catch (e) {
-        // continue anyway
-      }
+        } while (page.length === 500);
+      } catch (e) { /* continue */ }
     }
 
-    for (let i = 0; i < SHEETS.length; i++) {
-      const cfg = SHEETS[i];
-      setStatus(prev => prev.map((s, idx) => idx === i ? { ...s, state: "running" } : s));
+    let grandTotal = 0;
+    let grandDupes = 0;
+
+    for (let i = 0; i < FILES.length; i++) {
+      const file = FILES[i];
+      setStatus(prev => prev.map((s, idx) => idx === i ? { ...s, state: "extracting" } : s));
 
       try {
         const extracted = await base44.integrations.Core.ExtractDataFromUploadedFile({
-          file_url: FILE_URL,
+          file_url: file.url,
           json_schema: SCHEMA,
         });
 
@@ -86,45 +119,69 @@ export default function ImportData() {
 
         const raw = extracted.output?.rows || (Array.isArray(extracted.output) ? extracted.output : []);
 
-        const records = raw
-          .filter(r => clean(r.first_name) && clean(r.last_name))
-          .map(r => ({
-            first_name:                  clean(r.first_name),
-            last_name:                   clean(r.last_name),
-            gender:                      cfg.gender,
-            team:                        clean(r.institution),
-            division:                    firstLine(r.division),
-            year:                        firstLine(r.division),   // backward compat
-            ncaa_id:                     clean(r.ncaa_id),
-            academic_year:               clean(r.academic_year),
-            sports:                      clean(r.sport),
-            event_name:                  firstLine(r.sport) || cfg.defaultEvent,
-            conference:                  firstLine(r.sport_conference),
-            event_code:                  firstLine(r.sport_conference),  // backward compat
-            designated_student_athlete:  clean(r.designated_student_athlete),
-            twl:                         clean(r.twl),
-            initiated_date:              clean(r.initiated_date),
-            last_updated:                clean(r.last_updated),
-            student_status:              clean(r.student_status),
-            sheet:                       cfg.name,
-            mark:                        "",       // no performance data in source
-            mark_seconds:                0,
-            is_field_event:              false,
-          }));
+        // Deduplicate by tfrrs_id + event + season + list_id
+        const seen = new Set();
+        let dupes = 0;
+        const records = [];
 
-        const batchSize = 50;
+        for (const r of raw) {
+          if (!clean(r.athlete) && !clean(r.athlete_id)) continue;
+          const key = `${clean(r.athlete_id)}|${clean(r.event)}|${clean(r.season)}|${clean(r.list_id)}`;
+          if (seen.has(key)) { dupes++; continue; }
+          seen.add(key);
+
+          const { first_name, last_name } = parseName(clean(r.athlete));
+          if (!first_name && !last_name) continue;
+
+          records.push({
+            first_name,
+            last_name,
+            gender:        file.gender,
+            team:          clean(r.school),
+            division:      clean(r.division),
+            tfrrs_id:      clean(r.athlete_id),
+            tfrrs_profile: clean(r.tfrrs_profile),
+            class_year:    clean(r.class_year),
+            event_name:    clean(r.event),
+            mark:          clean(r.time),
+            mark_seconds:  timeToSeconds(r.time),
+            season:        clean(r.season),
+            meet_name:     clean(r.meet),
+            meet_date:     clean(r.meet_date),
+            list_id:       Number(r.list_id) || 0,
+            is_field_event: false,
+          });
+        }
+
+        setStatus(prev => prev.map((s, idx) => idx === i ? { ...s, state: "importing" } : s));
+
+        const batchSize = 100;
         for (let b = 0; b < records.length; b += batchSize) {
           await base44.entities.Runner.bulkCreate(records.slice(b, b + batchSize));
         }
 
-        setStatus(prev => prev.map((s, idx) => idx === i ? { ...s, state: "done", count: records.length } : s));
+        grandTotal += records.length;
+        grandDupes += dupes;
+        setStatus(prev => prev.map((s, idx) => idx === i ? { ...s, state: "done", count: records.length, dupes } : s));
       } catch (err) {
         setStatus(prev => prev.map((s, idx) => idx === i ? { ...s, state: "error", error: err.message } : s));
       }
     }
 
+    setTotalImported(grandTotal);
+    setTotalDupes(grandDupes);
     setRunning(false);
     setDone(true);
+  };
+
+  const stateLabel = (s) => {
+    if (!s) return <span className="text-gray-400">—</span>;
+    if (s.state === "pending")   return <span className="text-gray-400">Waiting...</span>;
+    if (s.state === "clearing")  return <span className="text-yellow-500 flex items-center gap-1"><Loader2 className="w-4 h-4 animate-spin" /> Clearing...</span>;
+    if (s.state === "extracting")return <span className="text-blue-500 flex items-center gap-1"><Loader2 className="w-4 h-4 animate-spin" /> Extracting...</span>;
+    if (s.state === "importing") return <span className="text-blue-600 flex items-center gap-1"><Loader2 className="w-4 h-4 animate-spin" /> Importing...</span>;
+    if (s.state === "done")      return <span className="text-green-600 flex items-center gap-1"><CheckCircle className="w-4 h-4" /> {s.count} rows{s.dupes > 0 ? `, ${s.dupes} dupes skipped` : ""}</span>;
+    if (s.state === "error")     return <span className="text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" /> {s.error}</span>;
   };
 
   return (
@@ -132,88 +189,65 @@ export default function ImportData() {
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-xl space-y-6">
         <div className="text-center">
           <Upload className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-          <h1 className="text-xl font-bold text-gray-900">Import Portal Data</h1>
+          <h1 className="text-xl font-bold text-gray-900">Import TFRRS Marks</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Imports all 4 sheets from <strong>PortalInfo1.xlsx</strong> into the Runner entity.
+            Imports Women's and Men's marks from uploaded TFRRS export files.
           </p>
         </div>
 
-        {/* Column mapping info */}
+        {/* Column mapping */}
         <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-xs text-blue-800 space-y-1">
           <div className="font-semibold flex items-center gap-1 mb-2"><Info className="w-3 h-3" /> Column Mapping</div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-            <span className="text-blue-500">First Name</span><span>→ first_name ✓</span>
-            <span className="text-blue-500">Last Name</span><span>→ last_name ✓</span>
-            <span className="text-blue-500">Institution</span><span>→ team ✓</span>
-            <span className="text-blue-500">D (Division)</span><span>→ division ✓</span>
-            <span className="text-blue-500">NCAA ID</span><span>→ ncaa_id ✓</span>
-            <span className="text-blue-500">Year</span><span>→ academic_year ✓</span>
-            <span className="text-blue-500">Sport</span><span>→ event_name / sports ✓</span>
-            <span className="text-blue-500">Sport Conference</span><span>→ conference ✓</span>
-            <span className="text-blue-500">Designated S-A</span><span>→ designated_student_athlete ✓</span>
-            <span className="text-blue-500">TWL</span><span>→ twl ✓</span>
-            <span className="text-blue-500">Initiated Date</span><span>→ initiated_date ✓</span>
-            <span className="text-blue-500">Last Updated</span><span>→ last_updated ✓</span>
-            <span className="text-blue-500">Student Status</span><span>→ student_status ✓</span>
+            <span className="text-blue-500">Athlete (Last, First)</span><span>→ first_name + last_name ✓</span>
+            <span className="text-blue-500">Athlete ID</span><span>→ tfrrs_id ✓</span>
+            <span className="text-blue-500">TFRRS Profile</span><span>→ tfrrs_profile ✓</span>
+            <span className="text-blue-500">School</span><span>→ team ✓</span>
+            <span className="text-blue-500">Division</span><span>→ division ✓</span>
+            <span className="text-blue-500">Season</span><span>→ season ✓</span>
+            <span className="text-blue-500">Event</span><span>→ event_name ✓</span>
+            <span className="text-blue-500">Time</span><span>→ mark + mark_seconds ✓</span>
+            <span className="text-blue-500">Class Year</span><span>→ class_year ✓</span>
+            <span className="text-blue-500">Meet</span><span>→ meet_name ✓</span>
+            <span className="text-blue-500">Meet Date</span><span>→ meet_date ✓</span>
+            <span className="text-blue-500">List ID</span><span>→ list_id ✓</span>
+            <span className="text-blue-500">Gender</span><span>→ gender ✓ (from file)</span>
           </div>
-          <div className="mt-2 pt-2 border-t border-blue-200 text-orange-700 font-medium">
-            ⚠ No performance data (times/distances/marks) exists in this file — it is an eligibility/portal roster list only.
+          <div className="mt-2 pt-2 border-t border-blue-200 text-gray-500">
+            Duplicates detected by: Athlete ID + Event + Season + List ID
           </div>
         </div>
 
-        {/* Sheet progress */}
+        {/* Progress */}
         <div className="space-y-2">
-          {SHEETS.map((cfg, i) => {
+          {FILES.map((f, i) => {
             const s = status[i];
             return (
-              <div key={cfg.name} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
-                <div>
-                  <span className="font-medium text-gray-800 text-sm">{cfg.name}</span>
-                  <span className="ml-2">
-                    <Badge variant="outline" className="text-xs">{cfg.gender === "M" ? "Men" : "Women"}</Badge>
-                  </span>
+              <div key={f.name} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-gray-800 text-sm">{f.name}</span>
+                  <Badge variant="outline" className="text-xs">{f.gender === "M" ? "Men" : "Women"}</Badge>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  {!s && <span className="text-gray-400">—</span>}
-                  {s?.state === "pending" && <span className="text-gray-400">Waiting...</span>}
-                  {s?.state === "running" && <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
-                  {s?.state === "done" && (
-                    <span className="flex items-center gap-1 text-green-600">
-                      <CheckCircle className="w-4 h-4" /> {s.count} athletes
-                    </span>
-                  )}
-                  {s?.state === "error" && (
-                    <span className="flex items-center gap-1 text-red-500">
-                      <AlertCircle className="w-4 h-4" /> {s.error}
-                    </span>
-                  )}
-                </div>
+                <div className="text-sm">{stateLabel(s)}</div>
               </div>
             );
           })}
         </div>
 
         <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={clearFirst}
-            onChange={e => setClearFirst(e.target.checked)}
-            className="rounded"
-          />
+          <input type="checkbox" checked={clearFirst} onChange={e => setClearFirst(e.target.checked)} className="rounded" />
           Clear existing records before importing
         </label>
 
         {done && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center text-sm text-green-700">
-            Import complete! <a href="/" className="underline font-medium">Go to dashboard →</a>
+            ✓ Imported <strong>{totalImported.toLocaleString()}</strong> marks
+            {totalDupes > 0 && <>, skipped <strong>{totalDupes}</strong> duplicates</>}.{" "}
+            <a href="/" className="underline font-medium">View dashboard →</a>
           </div>
         )}
 
-        <Button
-          onClick={runImport}
-          disabled={running}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-        >
+        <Button onClick={runImport} disabled={running} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
           {running ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Importing...</> : "Start Import"}
         </Button>
       </div>

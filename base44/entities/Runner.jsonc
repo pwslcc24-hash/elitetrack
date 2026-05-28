@@ -20,77 +20,63 @@
     },
     "team": {
       "type": "string",
-      "description": "Institution / school name"
+      "description": "School name"
     },
     "division": {
       "type": "string",
-      "enum": [
-        "I",
-        "II",
-        "III"
-      ],
-      "description": "NCAA Division (I, II, or III)"
+      "description": "NCAA Division (NCAA D1, NCAA D2, NCAA D3)"
     },
-    "ncaa_id": {
+    "tfrrs_id": {
       "type": "string",
-      "description": "NCAA athlete ID"
+      "description": "TFRRS Athlete ID (unique per athlete)"
     },
-    "academic_year": {
+    "tfrrs_profile": {
       "type": "string",
-      "description": "Academic year e.g. 2025-26"
+      "description": "TFRRS profile URL"
     },
-    "sports": {
+    "class_year": {
       "type": "string",
-      "description": "All sports this athlete is registered for (newline separated)"
+      "description": "Class year e.g. SR-4, JR-3, SO-2, FR-1"
     },
     "event_name": {
       "type": "string",
-      "description": "Primary sport/event name (first sport listed)"
-    },
-    "conference": {
-      "type": "string",
-      "description": "Primary sport conference"
-    },
-    "designated_student_athlete": {
-      "type": "string",
-      "description": "Designated Student-Athlete sports (from Designated Student-Athlete column)"
-    },
-    "sheet": {
-      "type": "string",
-      "description": "Source sheet name (Men XC, Men Outdoor, Women XC, Women Track)"
-    },
-    "twl": {
-      "type": "string",
-      "description": "TWL column value"
-    },
-    "initiated_date": {
-      "type": "string",
-      "description": "Initiated Date"
-    },
-    "last_updated": {
-      "type": "string",
-      "description": "Last Updated date"
-    },
-    "student_status": {
-      "type": "string",
-      "description": "Student Status column"
-    },
-    "year": {
-      "type": "string",
-      "description": "Legacy field - mapped from division for backward compat"
+      "description": "Event name e.g. 800m, Mile, 5000m"
     },
     "mark": {
       "type": "string",
-      "description": "Not present in source \u2014 no performance data in this file"
+      "description": "Performance mark (time string e.g. 4:22.46)"
     },
     "mark_seconds": {
       "type": "number",
-      "description": "Not present in source \u2014 no performance data in this file",
+      "description": "Mark converted to total seconds for numeric sorting/comparison",
       "default": 0
+    },
+    "season": {
+      "type": "string",
+      "description": "Season e.g. 2025 outdoor, 2026 indoor"
+    },
+    "meet_name": {
+      "type": "string",
+      "description": "Name of the meet"
+    },
+    "meet_date": {
+      "type": "string",
+      "description": "Date of the meet (e.g. Apr 4, 2025)"
+    },
+    "list_id": {
+      "type": "number",
+      "description": "TFRRS List ID"
+    },
+    "is_field_event": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a field event (distance in meters instead of time)"
     }
   },
   "required": [
     "first_name",
-    "last_name"
+    "last_name",
+    "event_name",
+    "mark"
   ]
 }
