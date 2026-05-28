@@ -1,0 +1,96 @@
+{
+  "name": "Runner",
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "type": "string",
+      "description": "Athlete's first name"
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Athlete's last name"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "M",
+        "F"
+      ],
+      "description": "Gender"
+    },
+    "team": {
+      "type": "string",
+      "description": "Institution / school name"
+    },
+    "division": {
+      "type": "string",
+      "enum": [
+        "I",
+        "II",
+        "III"
+      ],
+      "description": "NCAA Division (I, II, or III)"
+    },
+    "ncaa_id": {
+      "type": "string",
+      "description": "NCAA athlete ID"
+    },
+    "academic_year": {
+      "type": "string",
+      "description": "Academic year e.g. 2025-26"
+    },
+    "sports": {
+      "type": "string",
+      "description": "All sports this athlete is registered for (newline separated)"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Primary sport/event name (first sport listed)"
+    },
+    "conference": {
+      "type": "string",
+      "description": "Primary sport conference"
+    },
+    "designated_student_athlete": {
+      "type": "string",
+      "description": "Designated Student-Athlete sports (from Designated Student-Athlete column)"
+    },
+    "sheet": {
+      "type": "string",
+      "description": "Source sheet name (Men XC, Men Outdoor, Women XC, Women Track)"
+    },
+    "twl": {
+      "type": "string",
+      "description": "TWL column value"
+    },
+    "initiated_date": {
+      "type": "string",
+      "description": "Initiated Date"
+    },
+    "last_updated": {
+      "type": "string",
+      "description": "Last Updated date"
+    },
+    "student_status": {
+      "type": "string",
+      "description": "Student Status column"
+    },
+    "year": {
+      "type": "string",
+      "description": "Legacy field - mapped from division for backward compat"
+    },
+    "mark": {
+      "type": "string",
+      "description": "Not present in source \u2014 no performance data in this file"
+    },
+    "mark_seconds": {
+      "type": "number",
+      "description": "Not present in source \u2014 no performance data in this file",
+      "default": 0
+    }
+  },
+  "required": [
+    "first_name",
+    "last_name"
+  ]
+}
